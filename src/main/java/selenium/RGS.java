@@ -93,11 +93,12 @@ public class RGS {
         Actions actions=new Actions(webDriver);
         WebElement checkbox = webDriver.findElement(By.xpath("//div[@ class=\"checkbox-body form__checkbox\" ]/input"));
         scrollToElement(webDriver.findElement(By.xpath("//div[@class=\"form-submit\"]")));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class=\"form-submit\"]")));
+        Thread.sleep(2000);
+//        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class=\"form-submit\"]")));
         actions.moveToElement(checkbox).click(checkbox).build().perform();
 
-        WebElement sendForm = webDriver.findElement(By.xpath("//button[@type=\"submit\"]"));
-        sendForm.click();
+//        WebElement sendForm = webDriver.findElement(By.xpath("//button[@type=\"submit\"]"));
+//        sendForm.click();
 
 
     }
