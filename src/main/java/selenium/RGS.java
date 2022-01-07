@@ -10,19 +10,21 @@ import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
+import java.util.concurrent.TimeUnit;
+
 public class RGS {
     WebDriver webDriver;
     WebDriverWait wait;
 
-   @BeforeTest
-    public void before(){
-       System.setProperty("webdriver.chrome.driver", "src/test/resources/chromedriver.exe");
-       webDriver = new ChromeDriver();
-       webDriver.manage().window().maximize();
-//       webDriver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
-//       webDriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-       wait = new WebDriverWait(webDriver,10);
-       webDriver.get("https://www.rgs.ru/");
+    @BeforeTest
+    public void before() {
+        System.setProperty("webdriver.chrome.driver", "src/test/resources/chromedriver.exe");
+        webDriver = new ChromeDriver();
+        webDriver.manage().window().maximize();
+        webDriver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
+        webDriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        wait = new WebDriverWait(webDriver, 10);
+        webDriver.get("https://www.rgs.ru/");
     }
 
     @Test
@@ -56,59 +58,58 @@ public class RGS {
         scrollToElement(webDriver.findElement(By.xpath("//div[@class=\"form-submit\"]")));
 
         WebElement name = webDriver.findElement(By.xpath("//input[@name=\"userName\"]"));
-        scrollToElement(name);
-        wait.until(ExpectedConditions.visibilityOf(name));
-        name.submit();
-        name.sendKeys("Петров Петр Петрович");
+        fillInputField(name, "Петров Петр Петрович");
         Assert.assertEquals(name.getAttribute("value"), "Петров Петр Петрович");
 
         WebElement phoneNumber = webDriver.findElement(By.xpath("//input[@name=\"userTel\"]"));
-        scrollToElement(phoneNumber);
-        wait.until(ExpectedConditions.visibilityOf(phoneNumber));
-        phoneNumber.submit();
-        phoneNumber.sendKeys("8485684353");
-        Assert.assertEquals(phoneNumber.getAttribute("value"),"+7 (848) 568-4353");
-
+        fillInputField(phoneNumber, "8485684353");
+        Assert.assertEquals(phoneNumber.getAttribute("value"), "+7 (848) 568-4353");
 
         WebElement address = webDriver.findElement(By.xpath("//input[@placeholder=\"Введите\"]"));
-        scrollToElement(address);
-        wait.until(ExpectedConditions.visibilityOf(address));
-        address.submit();
-        address.sendKeys("London");
+        fillInputField(address,"London");
         Assert.assertEquals(address.getAttribute("value"), "London");
 
         WebElement userEmail = webDriver.findElement(By.xpath("//input[@name=\"userEmail\"]"));
-        scrollToElement(userEmail);
-        wait.until(ExpectedConditions.visibilityOf(userEmail));
-        userEmail.submit();
-        userEmail.sendKeys("qwertyqwerty");
+        fillInputField(userEmail,"qwertyqwerty");
         Assert.assertEquals(userEmail.getAttribute("value"), "qwertyqwerty");
 
-        scrollToElement(userEmail);
-//        WebElement element = webDriver.findElement(By.xpath("//span[@class=\"input__error text--small\" and(../label[contains(text(), \"почта\")])]"));
-//        Assert.assertEquals(element.getText(),
-//                "Введите корректный адрес электронной почты");
-
-
-        Actions actions=new Actions(webDriver);
+        Actions actions = new Actions(webDriver);
         WebElement checkbox = webDriver.findElement(By.xpath("//div[@ class=\"checkbox-body form__checkbox\" ]/input"));
         scrollToElement(webDriver.findElement(By.xpath("//div[@class=\"form-submit\"]")));
         Thread.sleep(2000);
-//        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class=\"form-submit\"]")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class=\"form-submit\"]")));
         actions.moveToElement(checkbox).click(checkbox).build().perform();
 
+        WebElement element = webDriver.findElement(By.xpath("//span[@class=\"input__error text--small\" and(../label[contains(text(), \"почта\")])]"));
+        Assert.assertEquals(element.getText(),
+                "Введите корректный адрес электронной почты");
+
+        //Кнопка иногда неактивна
+
 //        WebElement sendForm = webDriver.findElement(By.xpath("//button[@type=\"submit\"]"));
+//        wait.until(ExpectedConditions.elementToBeClickable(sendForm));
 //        sendForm.click();
 
 
     }
+
     @AfterTest
-    public void afterTest(){
-       webDriver.quit();
+    public void afterTest() {
+        webDriver.quit();
     }
-    public void scrollToElement(WebElement element){
+
+    public void scrollToElement(WebElement element) {
         ((JavascriptExecutor) webDriver).executeScript(
                 "arguments[0].scrollIntoView();", element);
+    }
+
+    public void fillInputField(WebElement element, String value){
+        scrollToElement(element);
+        wait.until(ExpectedConditions.elementToBeClickable(element));
+//        element.click();
+        element.submit();
+        element.clear();
+        element.sendKeys(value);
     }
 
 }
